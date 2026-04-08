@@ -8,7 +8,7 @@
 
     // --- Gemini API Config ---
     const GEMINI_API_KEY = 'AIzaSyBxDhGGutpA5Kk57F9vAkdRPpUSDCAecYw';
-    const GEMINI_MODEL = 'gemini-3.1-flash-lite-preview';
+    const GEMINI_MODEL = 'gemini-1.5-flash'; // Alterado para a versão mais estável e compatível
     const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`;
 
     // --- Prompt Mestre do Ricardo ---
@@ -58,7 +58,8 @@ IMPORTANTE:
     let isTyping = false;
     const messagesContainer = document.getElementById('messagesContainer');
     const messagesInner = document.getElementById('messagesInner');
-    const welcomeBlock = document.getElementById('welcomeBlock');
+    // Remove static welcomeBlock reference as it changes on reset
+    const getWelcomeBlock = () => document.getElementById('welcomeBlock');
     const welcomeSuggestions = document.getElementById('welcomeSuggestions');
     const messageInput = document.getElementById('messageInput');
     const sendBtn = document.getElementById('sendBtn');
@@ -81,7 +82,7 @@ IMPORTANTE:
 
     function loadHistory() {
         if (conversationStarted && conversationHistory.length > 0) {
-            welcomeBlock.remove();
+            if (getWelcomeBlock()) getWelcomeBlock().remove();
             conversationHistory.forEach(item => {
                 const sender = item.role === 'user' ? 'user' : 'ricardo';
                 const text = item.parts[0].text;
@@ -145,11 +146,12 @@ IMPORTANTE:
         // Hide welcome block on first message
         if (!conversationStarted) {
             conversationStarted = true;
-            if (welcomeBlock) {
-                welcomeBlock.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
-                welcomeBlock.style.opacity = '0';
-                welcomeBlock.style.transform = 'translateY(-10px)';
-                setTimeout(() => welcomeBlock.remove(), 300);
+            const wb = getWelcomeBlock();
+            if (wb) {
+                wb.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                wb.style.opacity = '0';
+                wb.style.transform = 'translateY(-10px)';
+                setTimeout(() => wb.remove(), 300);
             }
         }
 
@@ -202,7 +204,9 @@ IMPORTANTE:
             });
 
             if (!response.ok) {
-                throw new Error(`API Error: ${response.status}`);
+                const errorData = await response.json();
+                console.error('Detalhes do erro da API:', errorData);
+                throw new Error(`API Error: ${response.status} - ${errorData.error?.message || 'Unknown error'}`);
             }
 
             const data = await response.json();
@@ -351,11 +355,9 @@ IMPORTANTE:
         `;
 
         messagesInner.innerHTML = welcomeHtml;
-
-        document.getElementById('welcomeSuggestions').addEventListener('click', (e) => {
-            const chip = e.target.closest('.suggestion-chip');
-            if (chip) sendMessage(chip.dataset.message);
-        });
+        
+        // No need to re-bind events here as we are using event delegation on the parent
+        // or we can re-query if necessary, but the global listener on init is better.
 
         messageInput.value = '';
         messageInput.style.height = 'auto';

@@ -101,7 +101,8 @@ body {
 /* --- App Layout --- */
 .app-layout {
     display: flex;
-    height: 100vh;
+    height: 100dvh;
+    height: 100vh; /* Fallback */
     width: 100%;
     position: relative;
 }
@@ -382,7 +383,8 @@ body {
     flex: 1;
     display: flex;
     flex-direction: column;
-    height: 100vh;
+    height: 100%; /* Use parent height */
+    max-height: 100dvh;
     min-width: 0;
     position: relative;
     background: var(--bg-primary);
