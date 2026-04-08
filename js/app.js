@@ -7,8 +7,8 @@
     'use strict';
 
     // --- Gemini API Config ---
-    const GEMINI_API_KEY = 'AIzaSyBxDhGGutpA5Kk57F9vAkdRPpUSDCAecYw';
-    const GEMINI_MODEL = 'gemini-1.5-flash-latest'; 
+    const GEMINI_API_KEY = 'AIzaSyDb5sOgBLQ0oWbTyw5gXtgmN8qJ_oaBy-U';
+    const GEMINI_MODEL = 'gemini-1.5-flash'; 
     const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`;
 
     // --- Prompt Mestre do Ricardo ---
@@ -241,22 +241,20 @@ IMPORTANTE:
     }
 
     // --- Fallback Logic (The "Smart" Ricardo offline) ---
-    function getFallbackResponse(input, errorMessage = '') {
+    function getFallbackResponse(input) {
         const lower = input.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-        
-        const debugInfo = errorMessage ? `\n\n(Erro técnico: ${errorMessage})` : '';
         
         if (lower.includes('oi') || lower.includes('ola') || lower.includes('e ai')) {
             return "E aí. Tô com uma instabilidade aqui na rede, mas pode falar — o que tá rolando?";
         }
         if (lower.includes('negocio') || lower.includes('venda') || lower.includes('dinheiro')) {
-            return "Minha conexão caiu agora, mas olha: negócio é sobre resolver problema. Me conta mais do teu cenário que eu tento te dar um norte mesmo assim." + debugInfo;
+            return "Minha conexão caiu agora, mas olha: negócio é sobre resolver problema. Me conta mais do teu cenário que eu tento te dar um norte mesmo assim.";
         }
         if (lower.includes('quem e voce') || lower.includes('ia') || lower.includes('robo')) {
-            return "Sou o Ricardo. Algumas pessoas acham que sou robô quando o servidor oscila, mas é só o sistema me deixando na mão. O que você precisa?" + debugInfo;
+            return "Sou o Ricardo. Algumas pessoas acham que sou robô quando o servidor oscila, mas é só o sistema me deixando na mão. O que você precisa?";
         }
         
-        return "Tô com um problema técnico no meu servidor agora, mas não vou te deixar no vácuo. Me diz o ponto principal do que você precisa." + debugInfo;
+        return "Tô com um problema técnico no meu servidor agora, mas não vou te deixar no vácuo. Me diz o ponto principal do que você precisa que eu tento ajudar.";
     }
 
     // --- Append Message ---
